@@ -2,6 +2,7 @@
 import socket
 from MessageReceiver import MessageReceiver
 from MessageParser import MessageParser
+import json
 
 class Client:
     """
@@ -15,28 +16,42 @@ class Client:
 
         # Set up the socket connection to the server
         self.connection = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        self.username
-        
-        # TODO: Finish init process with necessary code
+        #self.username
+        self.host = host
+        self.server_port = server_port
         self.run()
+        self.receive_message(self, self.connection)
+
+        self.holdMessage
+        self.messageDict
 
     def run(self):
         # Initiate the connection to the server
         self.connection.connect((self.host, self.server_port))
         
     def disconnect(self):
-        # TODO: Handle disconnection
-        pass
+        
+        self.connection.close()
+        exit()
 
     def receive_message(self, message):
-        # TODO: Handle incoming message
-        pass
+        
+        self.messageDict = self.MessageParser().parse_message(self, message)
 
     def send_payload(self, data):
-        # TODO: Handle sending of a payload
-        pass
-        
-    # More methods may be needed!
+        if data == 'help':
+            dataDict = {'request':'help', 'conten': ''}
+        elif data == 'names':
+            dataDict = {'request':'names', 'content': ''}
+        elif data == 'logout':
+            dataDict = {'request':'logout', 'content': ''}
+        else:
+            if not self.loggedIn:
+                dataDict = {'request':'login', 'content': data}
+            else:
+                dataDict = {'request':'msg', 'content': data}
+
+        self.connection.send(json.dumps(dataDict))
 
 
 if __name__ == '__main__':
@@ -46,4 +61,4 @@ if __name__ == '__main__':
 
     No alterations are necessary
     """
-    client = Client('localhost', 9998)
+    client = Client('192.168.1.98', 9998)
